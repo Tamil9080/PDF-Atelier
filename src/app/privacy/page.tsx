@@ -19,8 +19,8 @@ const dataPractices = [
 const contactPoints = [
   {
     label: "Email",
-    value: "hello@pdfatelier.in",
-    href: "mailto:hello@pdfatelier.in",
+    value: "bstamilselvanofficial@gmail.com",
+    href: "mailto:bstamilselvanofficial@gmail.com",
   },
   {
     label: "Support desk",
