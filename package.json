@@ -9,19 +9,25 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.0.7",
+    "@dnd-kit/sortable": "^7.0.2",
     "browser-image-compression": "^2.0.2",
     "clsx": "^2.1.1",
+    "docx": "^9.6.0",
     "file-saver": "^2.0.5",
     "jspdf": "^4.2.0",
     "jszip": "^3.10.1",
     "lucide-react": "^0.576.0",
     "next": "16.1.6",
     "pdf-lib": "^1.17.1",
+    "pdf-lib-plus-encrypt": "^1.1.0",
     "pdfjs-dist": "^5.5.207",
+    "pptxgenjs": "^3.12.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-dropzone": "^15.0.0",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "tesseract.js": "^5.0.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

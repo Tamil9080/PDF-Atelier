@@ -10,13 +10,15 @@ interface DropzoneProps {
   maxFiles?: number;
   className?: string;
   label?: string;
+  multiple?: boolean;
 }
 
-export function Dropzone({ onDrop, accept, maxFiles, className, label }: DropzoneProps) {
+export function Dropzone({ onDrop, accept, maxFiles, className, label, multiple = true }: DropzoneProps) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept,
     maxFiles,
+    multiple,
   });
 
   return (

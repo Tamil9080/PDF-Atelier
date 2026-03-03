@@ -1,21 +1,66 @@
 "use client";
 
 import { useState } from "react";
+import type { CSSProperties } from "react";
 import { PDFDocument } from "pdf-lib";
 import { saveAs } from "file-saver";
 import { Loader2, Trash2 } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Dropzone } from "@/components/Dropzone";
 
+type FileEntry = {
+  id: string;
+  file: File;
+};
+
 export default function MergePdf() {
-  const [files, setFiles] = useState<File[]>([]);
+  const [files, setFiles] = useState<FileEntry[]>([]);
   const [processing, setProcessing] = useState(false);
 
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   const handleDrop = (acceptedFiles: File[]) => {
-    setFiles((prev) => [...prev, ...acceptedFiles]);
+    setFiles((prev) => [
+      ...prev,
+      ...acceptedFiles.map((file) => ({
+        id: crypto.randomUUID ? crypto.randomUUID() : `${file.name}-${file.lastModified}-${Math.random()}`,
+        file,
+      })),
+    ]);
   };
 
-  const removeFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+  const removeFile = (id: string) => {
+    setFiles((prev) => prev.filter((entry) => entry.id !== id));
+  };
+
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+    setFiles((prev) => {
+      const oldIndex = prev.findIndex((entry) => entry.id === active.id);
+      const newIndex = prev.findIndex((entry) => entry.id === over.id);
+      return arrayMove(prev, oldIndex, newIndex);
+    });
   };
 
   const handleMerge = async () => {
@@ -25,8 +70,8 @@ export default function MergePdf() {
     try {
       const mergedPdf = await PDFDocument.create();
 
-      for (const file of files) {
-        const arrayBuffer = await file.arrayBuffer();
+      for (const entry of files) {
+        const arrayBuffer = await entry.file.arrayBuffer();
         const pdf = await PDFDocument.load(arrayBuffer);
         const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
         copiedPages.forEach((page) => mergedPdf.addPage(page));
@@ -50,7 +95,7 @@ export default function MergePdf() {
           Merge PDF Files
         </h1>
         <p className="text-slate-300">
-          Combine multiple PDF files into one document. Drag to reorder.
+          Combine multiple PDF files into one document. Drag to reorder before merging.
         </p>
       </div>
 
@@ -64,23 +109,21 @@ export default function MergePdf() {
         {files.length > 0 && (
           <div className="mt-6 space-y-4">
             <h3 className="text-lg font-semibold text-white">Files to Merge ({files.length})</h3>
-            <div className="space-y-2">
-              {files.map((file, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-slate-950/40 rounded-lg border border-white/10 group hover:border-cyan-400/40 hover:bg-cyan-500/10 transition-colors">
-                  <div className="flex items-center gap-3 overflow-hidden">
-                    <div className="bg-gradient-to-r from-rose-500 to-orange-500 text-white px-2 py-1 rounded text-xs font-bold">PDF</div>
-                    <span className="truncate font-medium text-white">{file.name}</span>
-                    <span className="text-xs text-slate-400">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                  </div>
-                  <button
-                    onClick={() => removeFile(index)}
-                    className="text-slate-400 hover:text-rose-300 p-1 rounded-full hover:bg-rose-500/10 transition-colors"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={files.map((entry) => entry.id)} strategy={verticalListSortingStrategy}>
+                <div className="space-y-2">
+                  {files.map((entry, index) => (
+                    <SortableFileRow
+                      key={entry.id}
+                      id={entry.id}
+                      index={index + 1}
+                      file={entry.file}
+                      onRemove={removeFile}
+                    />
+                  ))}
                 </div>
-              ))}
-            </div>
+              </SortableContext>
+            </DndContext>
 
             <div className="flex justify-center mt-6">
               <button
@@ -95,6 +138,44 @@ export default function MergePdf() {
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+type SortableFileRowProps = {
+  id: string;
+  file: File;
+  index: number;
+  onRemove: (id: string) => void;
+};
+
+function SortableFileRow({ id, file, index, onRemove }: SortableFileRowProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Translate.toString(transform),
+    transition,
+  } as CSSProperties;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center justify-between p-3 rounded-lg border border-white/10 transition-colors ${isDragging ? "bg-cyan-500/20 border-cyan-400/50" : "bg-slate-950/40 hover:border-cyan-400/40 hover:bg-cyan-500/10"}`}
+      {...attributes}
+      {...listeners}
+    >
+      <div className="flex items-center gap-3 overflow-hidden">
+        <div className="text-xs font-semibold text-slate-400 w-6 text-center">{index}</div>
+        <div className="bg-gradient-to-r from-rose-500 to-orange-500 text-white px-2 py-1 rounded text-xs font-bold">PDF</div>
+        <span className="truncate font-medium text-white">{file.name}</span>
+        <span className="text-xs text-slate-400">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+      </div>
+      <button
+        onClick={() => onRemove(id)}
+        className="text-slate-400 hover:text-rose-300 p-1 rounded-full hover:bg-rose-500/10 transition-colors"
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
     </div>
   );
 }

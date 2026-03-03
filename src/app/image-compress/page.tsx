@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import imageCompression from "browser-image-compression";
+import { useMemo, useState } from "react";
 import { saveAs } from "file-saver";
 import { Loader2, Download } from "lucide-react";
 import { Dropzone } from "@/components/Dropzone";
@@ -10,8 +9,20 @@ export default function ImageCompress() {
   const [file, setFile] = useState<File | null>(null);
   const [compressedFile, setCompressedFile] = useState<File | null>(null);
   const [processing, setProcessing] = useState(false);
-  const [quality, setQuality] = useState(0.8);
+  const [qualityLevel, setQualityLevel] = useState(80);
   const [maxSizeMB, setMaxSizeMB] = useState(1);
+
+  const derivedQuality = useMemo(() => {
+    const normalized = qualityLevel / 100;
+    return 0.2 + Math.pow(normalized, 1.6) * 0.75; // finer control near the high end
+  }, [qualityLevel]);
+
+  const qualityLabel = useMemo(() => {
+    if (qualityLevel >= 85) return "Print perfect";
+    if (qualityLevel >= 65) return "Presentation";
+    if (qualityLevel >= 45) return "Web optimized";
+    return "Thumbnail";
+  }, [qualityLevel]);
 
   const handleDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -28,11 +39,13 @@ export default function ImageCompress() {
 
     setProcessing(true);
     try {
+      const { default: imageCompression } = await import("browser-image-compression");
+
       const options = {
         maxSizeMB: maxSizeMB || 1,
         maxWidthOrHeight: 1920,
         useWebWorker: true,
-        initialQuality: quality,
+        initialQuality: derivedQuality,
       };
 
       const compressedBlob = await imageCompression(file, options);
@@ -80,18 +93,18 @@ export default function ImageCompress() {
               <div className="space-y-3">
                 <label className="text-sm font-medium text-slate-200 flex justify-between">
                   <span>Quality</span>
-                  <span className="text-cyan-300 font-bold">{Math.round(quality * 100)}%</span>
+                  <span className="text-cyan-300 font-bold">{qualityLabel}</span>
                 </label>
                 <input
                   type="range"
-                  min="0.1"
-                  max="1"
-                  step="0.05"
-                  value={quality}
-                  onChange={(e) => setQuality(parseFloat(e.target.value))}
+                  min="20"
+                  max="100"
+                  step="5"
+                  value={qualityLevel}
+                  onChange={(e) => setQualityLevel(parseInt(e.target.value, 10))}
                   className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
                 />
-                <p className="text-xs text-slate-400">Lower quality = Smaller file size</p>
+                <p className="text-xs text-slate-400">Lower values favor smaller exports. Current target ≈ {Math.round(derivedQuality * 100)}% fidelity.</p>
               </div>
               
               <div className="space-y-3">

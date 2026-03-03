@@ -1,40 +1,74 @@
 "use client";
 
-import { useState } from "react";
-import { PDFDocument } from "pdf-lib";
+import { useEffect, useRef, useState } from "react";
 import { saveAs } from "file-saver";
 import { Loader2, Download } from "lucide-react";
 import { Dropzone } from "@/components/Dropzone";
+
+type WorkerResponse =
+  | { id: string; success: true; data: Uint8Array }
+  | { id: string; success: false; error: string };
 
 export default function PdfCompress() {
   const [file, setFile] = useState<File | null>(null);
   const [processing, setProcessing] = useState(false);
   const [compressedPdf, setCompressedPdf] = useState<Uint8Array | null>(null);
+  const [compressionMeta, setCompressionMeta] = useState<{ original: number; compressed: number } | null>(null);
+  const workerRef = useRef<Worker | null>(null);
+
+  useEffect(() => {
+    const worker = new Worker(new URL("../../workers/pdfCompress.worker.ts", import.meta.url), {
+      type: "module",
+    });
+    workerRef.current = worker;
+    return () => {
+      worker.terminate();
+      workerRef.current = null;
+    };
+  }, []);
 
   const handleDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       setFile(acceptedFiles[0]);
       setCompressedPdf(null);
+      setCompressionMeta(null);
     }
   };
 
   const handleCompress = async () => {
-    if (!file) return;
+    if (!file || !workerRef.current) return;
 
     setProcessing(true);
     try {
       const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      
-      // Simple optimization: Create a new document and copy pages to it.
-      // This often removes unused objects and streamlines the structure.
-      const newPdf = await PDFDocument.create();
-      const pages = await newPdf.copyPages(pdfDoc, pdfDoc.getPageIndices());
-      
-      pages.forEach((page) => newPdf.addPage(page));
-      
-      const pdfBytes = await newPdf.save();
+      const requestId = crypto.randomUUID();
+      const worker = workerRef.current;
+
+      const pdfBytes = await new Promise<Uint8Array>((resolve, reject) => {
+        const handleMessage = (event: MessageEvent<WorkerResponse>) => {
+          if (event.data.id !== requestId) return;
+          worker.removeEventListener("message", handleMessage);
+          worker.removeEventListener("error", handleError);
+          if (event.data.success) {
+            resolve(event.data.data);
+          } else {
+            reject(new Error(event.data.error));
+          }
+        };
+
+        const handleError = (event: ErrorEvent) => {
+          worker.removeEventListener("message", handleMessage);
+          worker.removeEventListener("error", handleError);
+          reject(event.error || new Error("Worker failed"));
+        };
+
+        worker.addEventListener("message", handleMessage);
+        worker.addEventListener("error", handleError);
+        worker.postMessage({ id: requestId, arrayBuffer }, [arrayBuffer]);
+      });
+
       setCompressedPdf(pdfBytes);
+      setCompressionMeta({ original: file.size, compressed: pdfBytes.length });
     } catch (error) {
       console.error("Error compressing PDF:", error);
       alert("Error compressing PDF.");
@@ -95,16 +129,31 @@ export default function PdfCompress() {
         )}
       </div>
 
-      {compressedPdf && (
-        <div className="bg-emerald-500/10 p-6 rounded-2xl border border-emerald-400/30">
-           <div className="flex justify-between items-center flex-col sm:flex-row gap-4">
-            <div>
-              <h3 className="text-lg font-semibold text-emerald-300">Optimization Complete!</h3>
-               <p className="text-emerald-200 mt-1">
-                New Size: <span className="font-bold text-white">{(compressedPdf.length / 1024 / 1024).toFixed(2)} MB</span> 
-                {' '}({Math.round((1 - compressedPdf.length / (file?.size || 1)) * 100)}% reduction)
-              </p>
+      {compressedPdf && compressionMeta && (
+        <div className="bg-emerald-500/10 p-6 rounded-2xl border border-emerald-400/30 space-y-4">
+          <div className="flex flex-col gap-2 text-sm text-slate-200">
+            <div className="flex items-center justify-between">
+              <span>Original Size</span>
+              <span className="font-semibold text-white">{(compressionMeta.original / 1024 / 1024).toFixed(2)} MB</span>
             </div>
+            <div className="flex items-center justify-between">
+              <span>Compressed Size</span>
+              <span className="font-semibold text-emerald-200">{(compressionMeta.compressed / 1024 / 1024).toFixed(2)} MB</span>
+            </div>
+            <div className="flex items-center justify-between text-xs uppercase tracking-wide text-emerald-300">
+              <span>Space Saved</span>
+              <span>
+                {Math.max(
+                  0,
+                  Math.round((1 - compressionMeta.compressed / compressionMeta.original) * 100)
+                )}%
+              </span>
+            </div>
+          </div>
+          <div className="flex justify-between items-center flex-col sm:flex-row gap-4">
+            <p className="text-sm text-slate-300 text-center sm:text-left">
+              All restructuring ran inside a dedicated Web Worker so the UI stayed responsive.
+            </p>
             <button
               onClick={downloadCompressed}
               className="bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-slate-950 px-4 py-2 rounded-xl font-semibold shadow-lg transition-colors flex items-center gap-2"
