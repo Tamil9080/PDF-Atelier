@@ -23,9 +23,56 @@ PDF Atelier is a secure, client-side workspace for PDF and image manipulation. E
 
 ## Tech Stack
 
-- **Framework**: [Next.js](https://nextjs.org/) using the App Router
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Key Libraries**: `pdf-lib-plus-encrypt`, `jspdf`, `browser-image-compression`, `docx`, `pptxgenjs`, `jszip`, `tesseract.js`, `react-dropzone`, `@dnd-kit/core`, `lucide-react`
+- **Framework**: [Next.js](https://nextjs.org/) 16 App Router with React Server Components + edge-ready APIs.
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) v4 with custom gradients plus CSS variables in `globals.css`.
+- **Workers**: Dedicated Web Workers under `src/workers` handle compression and crypto off the main thread.
+- **Key Libraries**: `pdf-lib-plus-encrypt`, `jspdf`, `browser-image-compression`, `docx`, `pptxgenjs`, `jszip`, `tesseract.js`, `react-dropzone`, `@dnd-kit/core`, `lucide-react`.
+- **Tooling**: TypeScript strict mode, ESLint flat config, and Next Font for deterministic typography.
+
+## Architecture
+
+The app keeps every document on-device by combining WASM-heavy libraries, App Router layouts, and background workers.
+
+1. **App shell**: `src/app/layout.tsx` wires global fonts, nav, footer, and shared metadata for the pdfatelier.in domain.
+2. **Feature routes**: Each tool (e.g., `/pdf-compress`, `/ocr`) lives inside `src/app/<tool>/page.tsx`, letting routes stream independently.
+3. **UI components**: `Navbar`, `Footer`, and `Dropzone` share glassmorphism styling plus responsive layouts.
+4. **Processing layer**: Utility helpers in `src/lib/utils.ts` coordinate `pdf-lib`, `tesseract.js`, and `browser-image-compression` before handing work to workers such as `pdfCompress.worker.ts`.
+5. **Resilience**: Global `loading.tsx` and `error.tsx` surfaces keep the experience branded even during suspense or unexpected failures.
+
+This structure keeps UX snappy, isolates heavy operations, and allows deploying to static or edge platforms without server state.
+
+## Roadmap
+
+- [ ] **Realtime batch presets** – sync watermark, rotate, and protection presets across workspaces.
+- [ ] **Desktop bridge** – package the Next.js frontend via Tauri/Electron for offline desktop installs.
+- [ ] **More converters** – add PDF ↔️ Excel plus AI-assisted redaction flows.
+- [ ] **Accessibility pass** – expand keyboard traps, prefers-reduced-motion fallbacks, and narration hints.
+- [ ] **Telemetry opt-in** – ship a privacy-preserving toggle so teams can visualize throughput without exposing docs.
+
+## Contribution Guide
+
+1. **Fork & clone**
+   ```bash
+   git clone https://github.com/<you>/pdf-converter.git
+   cd pdf-converter
+   ```
+2. **Install & verify**
+   ```bash
+   npm install
+   npm run lint && npm run dev
+   ```
+   Ensure all core flows (convert, compress, merge) run locally before submitting changes.
+3. **Create a feature branch**
+   ```bash
+   git checkout -b feat/<short-description>
+   ```
+4. **Write focused commits** that include docs/tests where relevant. Keep UI updates accessible (ARIA labels, keyboard flows).
+5. **Open a pull request** against `main`, describing:
+   - Problem solved
+   - Screenshots/video for UI work
+   - Testing steps (`npm run lint`, manual flows)
+
+Questions? Open a discussion or ping hello@pdfatelier.in.
 
 ## Getting Started
 

@@ -1,0 +1,20 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PDF Atelier icon">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0ea5e9" />
+      <stop offset="60%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#f472b6" />
+    </linearGradient>
+    <linearGradient id="glyph" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#e0f2fe" stop-opacity="0.85" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#bg)" />
+  <path
+    d="M164 140h120c64 0 104 36 104 92 0 62-46 100-108 100h-68v140h-48zm112 140c36 0 60-18 60-48 0-30-22-46-60-46h-64v94z"
+    fill="url(#glyph)"
+  />
+  <circle cx="360" cy="360" r="92" fill="rgba(3,7,18,0.25)" />
+  <path d="M360 296c32 0 58 26 58 58s-26 58-58 58-58-26-58-58" fill="none" stroke="#fff" stroke-width="26" stroke-linecap="round" stroke-opacity="0.85" />
+</svg>
