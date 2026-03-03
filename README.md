@@ -74,6 +74,12 @@ This structure keeps UX snappy, isolates heavy operations, and allows deploying 
 
 Questions? Open a discussion or ping hello@pdfatelier.in.
 
+## Security Posture
+
+- Strict HTTP headers (CSP, HSTS, COOP, CORP, Permissions-Policy) are configured in `next.config.ts`.
+- File uploads stay local—`Dropzone` validates MIME types, extensions, and 25&nbsp;MB limits before any processing.
+- Workers and libraries run on-device, so no third-party servers ever receive document bytes.
+
 ## Getting Started
 
 1. Install dependencies:

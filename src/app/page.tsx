@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Space_Grotesk } from "next/font/google";
 import {
@@ -21,6 +22,18 @@ import {
   Unlock,
   Zap,
 } from "lucide-react";
+
+export const metadata: Metadata = {
+  title: "Free PDF to Image Converter Online | PDF Atelier",
+  description:
+    "Use PDF Atelier's client-side toolkit to convert PDF to image without upload, run secure PDF workflows, and keep every document private.",
+  keywords: [
+    "free pdf to image converter online",
+    "convert pdf to image without upload",
+    "client side pdf converter",
+    "secure pdf converter online",
+  ],
+};
 
 const displayFont = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
@@ -239,7 +252,9 @@ export default function Home() {
               Design-forward PDF & image automation for teams that obsess over detail.
             </h1>
             <p className="text-base text-slate-300 sm:text-lg">
-              PDF Atelier keeps everything tactile and private—intense gradients, glassmorphism edges, and quick stats make the landing feel premium while every action still runs entirely in your browser.
+              PDF Atelier is the free PDF to image converter online for teams that demand polish and privacy. Convert PDF to image without
+              upload, orchestrate a client side PDF converter workflow, and rely on a secure PDF converter online that never ships your files
+              to a server.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
