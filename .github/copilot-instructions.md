@@ -1,0 +1,9 @@
+- [x] verified that a copilot-instructions.md file exists in the .github directory.
+- [x] Establish Project Requirements
+- [x] Scaffold the Project
+- [x] Customize the Project
+- [x] Install Required Extensions
+- [x] Compile the Project
+- [x] Create and Run Task
+- [x] Launch the Project
+- [x] Add Documentation
