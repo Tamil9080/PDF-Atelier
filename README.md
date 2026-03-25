@@ -18,7 +18,6 @@ PDF Atelier is a secure, client-side workspace for PDF and image manipulation. E
 - **Add Watermark**: Stamp diagonal text marks with custom opacity and size.
 - **Protect PDF**: Encrypt PDFs with viewer/owner passwords and permissions.
 - **Remove Password**: Decrypt PDFs (with the correct password) for sharing.
-- **OCR Workspace**: Use Tesseract.js to extract text from scans and photos.
 - **Batch Processing**: Apply rotate, watermark, or protect actions to many PDFs at once.
 
 ## Tech Stack
@@ -26,7 +25,7 @@ PDF Atelier is a secure, client-side workspace for PDF and image manipulation. E
 - **Framework**: [Next.js](https://nextjs.org/) 16 App Router with React Server Components + edge-ready APIs.
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) v4 with custom gradients plus CSS variables in `globals.css`.
 - **Workers**: Dedicated Web Workers under `src/workers` handle compression and crypto off the main thread.
-- **Key Libraries**: `pdf-lib-plus-encrypt`, `jspdf`, `browser-image-compression`, `docx`, `pptxgenjs`, `jszip`, `tesseract.js`, `react-dropzone`, `@dnd-kit/core`, `lucide-react`.
+- **Key Libraries**: `pdf-lib-plus-encrypt`, `jspdf`, `browser-image-compression`, `docx`, `pptxgenjs`, `jszip`, `react-dropzone`, `@dnd-kit/core`, `lucide-react`.
 - **Tooling**: TypeScript strict mode, ESLint flat config, and Next Font for deterministic typography.
 
 ## Architecture
@@ -34,9 +33,9 @@ PDF Atelier is a secure, client-side workspace for PDF and image manipulation. E
 The app keeps every document on-device by combining WASM-heavy libraries, App Router layouts, and background workers.
 
 1. **App shell**: `src/app/layout.tsx` wires global fonts, nav, footer, and shared metadata for the pdfatelier.in domain.
-2. **Feature routes**: Each tool (e.g., `/pdf-compress`, `/ocr`) lives inside `src/app/<tool>/page.tsx`, letting routes stream independently.
+2. **Feature routes**: Each tool (e.g., `/pdf-compress`, `/batch-processing`) lives inside `src/app/<tool>/page.tsx`, letting routes stream independently.
 3. **UI components**: `Navbar`, `Footer`, and `Dropzone` share glassmorphism styling plus responsive layouts.
-4. **Processing layer**: Utility helpers in `src/lib/utils.ts` coordinate `pdf-lib`, `tesseract.js`, and `browser-image-compression` before handing work to workers such as `pdfCompress.worker.ts`.
+4. **Processing layer**: Utility helpers in `src/lib/utils.ts` coordinate `pdf-lib` and `browser-image-compression` before handing work to workers such as `pdfCompress.worker.ts`.
 5. **Resilience**: Global `loading.tsx` and `error.tsx` surfaces keep the experience branded even during suspense or unexpected failures.
 
 This structure keeps UX snappy, isolates heavy operations, and allows deploying to static or edge platforms without server state.

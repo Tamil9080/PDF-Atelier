@@ -38,19 +38,32 @@ export function validateFileSecurity(file: File, options: FileValidationOptions 
     maxSizeBytes = DEFAULT_MAX_FILE_SIZE,
   } = options;
 
+  if (!file || typeof file !== "object") {
+    return "Invalid file payload.";
+  }
+
   if (file.size > maxSizeBytes) {
     return `${file.name} exceeds the ${formatBytes(maxSizeBytes)} limit.`;
   }
 
-  const mimeType = file.type?.toLowerCase();
-  const extension = file.name.split(".").pop()?.toLowerCase();
-  const normalizedExtensions = allowedExtensions.map((ext) => ext.replace(/^(\.)?/, "."));
+  const mimeType = typeof file.type === "string" ? file.type.toLowerCase() : "";
+  const fileName = typeof file.name === "string" ? file.name : "";
+  const extension = fileName.includes(".") ? fileName.split(".").pop()?.toLowerCase() : undefined;
+  const normalizedAllowedMime = Array.isArray(allowedMimeTypes)
+    ? allowedMimeTypes.filter((item): item is string => typeof item === "string").map((item) => item.toLowerCase())
+    : DEFAULT_ALLOWED_MIME;
+  const normalizedExtensions = Array.isArray(allowedExtensions)
+    ? allowedExtensions
+        .filter((ext): ext is string => typeof ext === "string" && ext.length > 0)
+        .map((ext) => ext.replace(/^(\.)?/, ".").toLowerCase())
+    : DEFAULT_ALLOWED_EXTENSIONS;
 
-  const mimeAllowed = mimeType ? allowedMimeTypes.includes(mimeType) : false;
+  const mimeAllowed = mimeType ? normalizedAllowedMime.includes(mimeType) : false;
   const extensionAllowed = extension ? normalizedExtensions.includes(`.${extension}`) : false;
 
   if (!mimeAllowed && !extensionAllowed) {
-    return `${file.name} is not an accepted file type.`;
+    const fallbackName = fileName || "This file";
+    return `${fallbackName} is not an accepted file type.`;
   }
 
   return null;

@@ -18,6 +18,7 @@
 
 body {
   min-height: 100vh;
+  transition: background 300ms ease, color 300ms ease;
   background: radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.15), transparent 45%),
     radial-gradient(circle at 80% 0%, rgba(168, 85, 247, 0.12), transparent 40%),
     linear-gradient(135deg, #020617 0%, #0f172a 45%, #1e1b4b 100%);
@@ -34,4 +35,15 @@ body::before {
   opacity: 0.8;
   pointer-events: none;
   z-index: -1;
+}
+
+html.light body {
+  background: radial-gradient(circle at 12% 14%, rgba(14, 165, 233, 0.15), transparent 42%),
+    radial-gradient(circle at 85% 0%, rgba(125, 211, 252, 0.25), transparent 36%),
+    linear-gradient(135deg, #f8fafc 0%, #eff6ff 45%, #e0f2fe 100%);
+  color: #0f172a;
+}
+
+html.light body::before {
+  opacity: 0.35;
 }

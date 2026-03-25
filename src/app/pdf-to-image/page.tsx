@@ -3,14 +3,67 @@
 import { useState, useEffect } from "react";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import { Loader2 } from "lucide-react";
+import { DndContext, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, arrayMove, rectSortingStrategy, useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { Clock3, Eye, GripVertical, Loader2 } from "lucide-react";
 import { Dropzone } from "@/components/Dropzone";
+
+type PreviewPage = {
+  id: string;
+  pageNumber: number;
+  preview: string;
+};
+
+const PREVIEW_LIMIT = 24;
+
+function SortablePreviewCard({ page }: { page: PreviewPage }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: page.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`relative overflow-hidden rounded-lg border bg-slate-950/60 ${
+        isDragging ? "border-cyan-300/80 shadow-lg shadow-cyan-500/30" : "border-white/15"
+      }`}
+    >
+      <img src={page.preview} alt={`Preview page ${page.pageNumber}`} className="w-full h-auto" />
+      <span className="absolute top-1 right-1 rounded-full bg-slate-900/90 px-2 py-0.5 text-[11px] font-semibold text-cyan-200">
+        {page.pageNumber}
+      </span>
+      <button
+        type="button"
+        className="absolute left-1 top-1 rounded-md bg-slate-900/80 p-1 text-cyan-200 hover:bg-slate-800"
+        aria-label={`Drag to reorder page ${page.pageNumber}`}
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="h-3.5 w-3.5" aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
 
 export default function PdfToImage() {
   const [files, setFiles] = useState<File[]>([]);
   const [processing, setProcessing] = useState(false);
   const [images, setImages] = useState<string[]>([]);
+  const [previewPages, setPreviewPages] = useState<PreviewPage[]>([]);
+  const [pageOrder, setPageOrder] = useState<number[]>([]);
   const [quality, setQuality] = useState(0.8);
+  const [progress, setProgress] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [processedCount, setProcessedCount] = useState(0);
+  const [etaSeconds, setEtaSeconds] = useState<number | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
   useEffect(() => {
     // Initialize worker
@@ -21,26 +74,109 @@ export default function PdfToImage() {
     initWorker();
   }, []);
 
-  const handleDrop = (acceptedFiles: File[]) => {
+  const loadPdfDocument = async (file: File) => {
+    const pdfjsLib = await import("pdfjs-dist");
+    const arrayBuffer = await file.arrayBuffer();
+    return pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  };
+
+  const generatePreviewPages = async (file: File) => {
+    const pdf = await loadPdfDocument(file);
+    const pagesToPreview = Math.min(pdf.numPages, PREVIEW_LIMIT);
+    const previews: PreviewPage[] = [];
+
+    setPageOrder(Array.from({ length: pdf.numPages }, (_, idx) => idx + 1));
+
+    for (let i = 1; i <= pagesToPreview; i++) {
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale: 0.45 });
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      if (!context) continue;
+
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      // @ts-expect-error - pdfjs-dist render typings are stricter than runtime usage.
+      await page.render({ canvasContext: context, viewport }).promise;
+      previews.push({
+        id: `preview-${i}`,
+        pageNumber: i,
+        preview: canvas.toDataURL("image/jpeg", 0.7),
+      });
+    }
+
+    setPreviewPages(previews);
+    setTotalPages(pdf.numPages);
+  };
+
+  const handlePreviewDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setPreviewPages((current) => {
+      const oldIndex = current.findIndex((item) => item.id === active.id);
+      const newIndex = current.findIndex((item) => item.id === over.id);
+      if (oldIndex < 0 || newIndex < 0) return current;
+
+      const nextPreview = arrayMove(current, oldIndex, newIndex);
+      const reorderedPreviewNumbers = nextPreview.map((item) => item.pageNumber);
+
+      setPageOrder((existing) => {
+        const remainder = existing.filter((num) => !reorderedPreviewNumbers.includes(num));
+        return [...reorderedPreviewNumbers, ...remainder];
+      });
+
+      return nextPreview;
+    });
+  };
+
+  const handleDrop = async (acceptedFiles: File[]) => {
+    setErrorMessage(null);
+    setProgress(0);
+    setCurrentPage(0);
+    setProcessedCount(0);
+    setEtaSeconds(null);
+    setTotalPages(0);
+    setPreviewPages([]);
+    setPageOrder([]);
     setFiles(acceptedFiles);
     setImages([]);
+
+    const pdfFile = acceptedFiles[0];
+    if (!pdfFile) return;
+
+    try {
+      await generatePreviewPages(pdfFile);
+    } catch (error) {
+      console.error("Error generating preview pages:", error);
+      setErrorMessage("Could not load preview pages. Try another PDF file.");
+    }
   };
 
   const convertPdfToImages = async () => {
     if (files.length === 0) return;
 
     setProcessing(true);
+    setErrorMessage(null);
+    setProgress(0);
+    setCurrentPage(0);
+    setProcessedCount(0);
+    setEtaSeconds(null);
     const pdfFile = files[0];
 
     try {
-      const pdfjsLib = await import("pdfjs-dist");
-      const arrayBuffer = await pdfFile.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const totalPages = pdf.numPages;
+      const pdf = await loadPdfDocument(pdfFile);
+      const conversionOrder = pageOrder.length > 0 ? pageOrder : Array.from({ length: pdf.numPages }, (_, idx) => idx + 1);
+      const totalPages = conversionOrder.length;
       const imagesList: string[] = [];
+      const startedAt = performance.now();
 
-      for (let i = 1; i <= totalPages; i++) {
-        const page = await pdf.getPage(i);
+      setTotalPages(totalPages);
+
+      for (let i = 0; i < conversionOrder.length; i++) {
+        const pageNumber = conversionOrder[i];
+        const page = await pdf.getPage(pageNumber);
         const viewport = page.getViewport({ scale: 2 });
         const canvas = document.createElement("canvas");
         const context = canvas.getContext("2d");
@@ -55,14 +191,25 @@ export default function PdfToImage() {
 
         const imgData = canvas.toDataURL("image/jpeg", quality);
         imagesList.push(imgData);
+
+        const completed = i + 1;
+        setCurrentPage(pageNumber);
+        setProcessedCount(completed);
+        setProgress(Math.round((completed / totalPages) * 100));
+
+        const elapsedSeconds = (performance.now() - startedAt) / 1000;
+        const averagePerPage = elapsedSeconds / completed;
+        const remainingSeconds = Math.max(0, Math.round((totalPages - completed) * averagePerPage));
+        setEtaSeconds(remainingSeconds);
       }
 
       setImages(imagesList);
     } catch (error) {
       console.error("Error converting PDF to images:", error);
-      alert("Error processing PDF file.");
+      setErrorMessage("Error processing PDF file.");
     } finally {
       setProcessing(false);
+      setEtaSeconds(null);
     }
   };
 
@@ -109,6 +256,12 @@ export default function PdfToImage() {
             label="Upload a PDF file to convert"
           />
 
+          {errorMessage && (
+            <p className="mt-4 rounded-xl border border-rose-400/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-100" role="alert">
+              {errorMessage}
+            </p>
+          )}
+
           {files.length > 0 && (
             <div className="mt-6 p-4 bg-gradient-to-r from-cyan-500/10 to-indigo-500/10 border border-cyan-400/20 rounded-xl flex justify-between items-center">
               <div className="flex items-center gap-3">
@@ -120,11 +273,51 @@ export default function PdfToImage() {
                 <span className="font-medium text-white truncate">{files[0].name}</span>
               </div>
               <button
-                onClick={() => setFiles([])}
+                onClick={() => {
+                  setFiles([]);
+                  setImages([]);
+                  setPreviewPages([]);
+                  setPageOrder([]);
+                  setProgress(0);
+                  setCurrentPage(0);
+                  setProcessedCount(0);
+                  setEtaSeconds(null);
+                  setTotalPages(0);
+                  setErrorMessage(null);
+                }}
                 className="text-sm font-semibold text-cyan-300 hover:text-white px-4 py-2 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0"
               >
                 Remove
               </button>
+            </div>
+          )}
+
+          {previewPages.length > 0 && (
+            <div className="mt-6 rounded-xl border border-white/10 bg-slate-950/30 p-5 space-y-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-cyan-200">
+                  <Eye className="h-4 w-4" aria-hidden="true" />
+                  <span className="text-sm font-semibold uppercase tracking-wide">PDF Preview</span>
+                </div>
+                <p className="text-xs text-slate-400">
+                  Showing {previewPages.length} of {totalPages} page{totalPages === 1 ? "" : "s"}
+                </p>
+              </div>
+              <p className="text-xs text-slate-400">Drag cards to change extraction order.</p>
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handlePreviewDragEnd}>
+                <SortableContext items={previewPages.map((item) => item.id)} strategy={rectSortingStrategy}>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {previewPages.map((page) => (
+                      <SortablePreviewCard key={page.id} page={page} />
+                    ))}
+                  </div>
+                </SortableContext>
+              </DndContext>
+              {totalPages > PREVIEW_LIMIT && (
+                <p className="text-xs text-amber-200/90">
+                  Only the first {PREVIEW_LIMIT} pages are previewed for speed. Remaining pages keep their original order.
+                </p>
+              )}
             </div>
           )}
 
@@ -143,7 +336,38 @@ export default function PdfToImage() {
                 onChange={(e) => setQuality(parseFloat(e.target.value))}
                 className="w-full h-3 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
               />
-              <p className="text-sm text-slate-300">💡 Lower quality = smaller file size</p>
+              <p className="text-sm text-slate-300">Lower quality means smaller file size.</p>
+            </div>
+          )}
+
+          {processing && (
+            <div className="mt-6 rounded-xl border border-cyan-400/30 bg-cyan-500/10 p-5">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-sm font-semibold text-cyan-100">Extracting pages...</p>
+                <p className="text-sm font-bold text-cyan-200">{progress}%</p>
+              </div>
+              <div className="h-3 overflow-hidden rounded-full bg-slate-900/80">
+                <div
+                  className="h-full bg-gradient-to-r from-cyan-400 via-sky-400 to-indigo-400 transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                  role="progressbar"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={progress}
+                  aria-label="PDF extraction progress"
+                />
+              </div>
+              <p className="mt-3 text-xs text-slate-200" aria-live="polite">
+                {totalPages > 0
+                  ? `Extracted ${processedCount} of ${totalPages} pages. Current source page: ${currentPage}`
+                  : "Preparing pages..."}
+              </p>
+              {etaSeconds !== null && (
+                <p className="mt-1 inline-flex items-center gap-1.5 text-xs text-cyan-100">
+                  <Clock3 className="h-3.5 w-3.5" aria-hidden="true" />
+                  Est. {etaSeconds}s remaining
+                </p>
+              )}
             </div>
           )}
 
