@@ -87,6 +87,7 @@ export default function ImageToPdf() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
               {images.map((file, index) => (
                 <div key={index} className="relative group border border-white/10 rounded-xl overflow-hidden bg-slate-950/40 aspect-square flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={URL.createObjectURL(file)}
                     alt={file.name}

@@ -33,6 +33,7 @@ function SortablePreviewCard({ page }: { page: PreviewPage }) {
         isDragging ? "border-cyan-300/80 shadow-lg shadow-cyan-500/30" : "border-white/15"
       }`}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={page.preview} alt={`Preview page ${page.pageNumber}`} className="w-full h-auto" />
       <span className="absolute top-1 right-1 rounded-full bg-slate-900/90 px-2 py-0.5 text-[11px] font-semibold text-cyan-200">
         {page.pageNumber}
@@ -403,6 +404,7 @@ export default function PdfToImage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {images.map((img, index) => (
                 <div key={index} className="relative group border-2 border-white/10 rounded-xl overflow-hidden shadow-md hover:shadow-cyan-500/30 transition-all hover:scale-105 bg-slate-950/40">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={img} alt={`Page ${index + 1}`} className="w-full h-auto" />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-cyan-500/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <span className="text-white text-lg font-semibold">Page {index + 1}</span>
