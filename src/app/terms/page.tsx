@@ -37,7 +37,7 @@ export default function TermsPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Terms</p>
         <h1 className="mt-4 text-4xl font-semibold text-white">Terms & Conditions</h1>
         <p className="mt-4 text-sm text-slate-300 max-w-3xl">
-          These terms outline the legal agreement between you ("User") and PDF Atelier ("We") for the use of the tools available on
+          These terms outline the legal agreement between you (&quot;User&quot;) and PDF Atelier (&quot;We&quot;) for the use of the tools available on
           pdfatelier.in. By accessing or using the tools you agree to the terms below.
         </p>
       </header>

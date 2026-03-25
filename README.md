@@ -9,10 +9,6 @@ PDF Atelier is a secure, client-side workspace for PDF and image manipulation. E
 - **Compress PDF**: Optimize structure and reduce size while keeping legibility.
 - **Compress Image**: Shrink images for the web without hurting sharpness.
 - **Merge PDF**: Drag multiple PDFs into one cohesive document.
-- **PDF to Word**: Capture text from PDFs into editable DOCX files fully offline.
-- **PDF to PowerPoint**: Storyboard PDF content into widescreen PPTX slides.
-- **Word to PDF**: Flatten DOCX briefs into review-ready PDFs.
-- **PowerPoint to PDF**: Export PPTX decks as lightweight PDFs.
 - **Split PDF**: Define page ranges and download each slice inside a ZIP.
 - **Rotate PDF**: Fix sideways scans or rotate every page in a stack instantly.
 - **Add Watermark**: Stamp diagonal text marks with custom opacity and size.
@@ -25,7 +21,7 @@ PDF Atelier is a secure, client-side workspace for PDF and image manipulation. E
 - **Framework**: [Next.js](https://nextjs.org/) 16 App Router with React Server Components + edge-ready APIs.
 - **Styling**: [Tailwind CSS](https://tailwindcss.com/) v4 with custom gradients plus CSS variables in `globals.css`.
 - **Workers**: Dedicated Web Workers under `src/workers` handle compression and crypto off the main thread.
-- **Key Libraries**: `pdf-lib-plus-encrypt`, `jspdf`, `browser-image-compression`, `docx`, `pptxgenjs`, `jszip`, `react-dropzone`, `@dnd-kit/core`, `lucide-react`.
+- **Key Libraries**: `pdf-lib-plus-encrypt`, `jspdf`, `browser-image-compression`, `jszip`, `react-dropzone`, `@dnd-kit/core`, `lucide-react`.
 - **Tooling**: TypeScript strict mode, ESLint flat config, and Next Font for deterministic typography.
 
 ## Architecture

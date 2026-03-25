@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import jsPDF from "jspdf";
-import { saveAs } from "file-saver";
 import { Loader2, Trash2 } from "lucide-react";
 import { Dropzone } from "@/components/Dropzone";
 
