@@ -69,8 +69,6 @@ const containerVariants: Variants = {
     transition: {
       staggerChildren: 0.1,
       delayChildren: 0.1,
-      type: "spring",
-      stiffness: 100
     },
   },
 };
@@ -82,7 +80,8 @@ const itemVariants: Variants = {
     opacity: 1,
     transition: {
       type: "spring",
-      stiffness: 100
+      stiffness: 100,
+      damping: 10,
     }
   },
 };
