@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Space_Grotesk } from "next/font/google";
-import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import { motion, useScroll, useTransform, type Transition, type Variants } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import {
   ArrowUpRight,
@@ -70,9 +70,14 @@ const containerVariants: Variants = {
   },
 };
 
+const springInTransition: Transition = {
+  type: "spring",
+  stiffness: 100,
+};
+
 const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
+  visible: { y: 0, opacity: 1, transition: springInTransition },
 };
 
 export default function ClientPage() {
