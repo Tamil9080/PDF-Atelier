@@ -68,12 +68,12 @@ const containerVariants = {
     opacity: 1,
     transition: { staggerChildren: 0.1, delayChildren: 0.1 },
   },
-} satisfies Variants;
+} as Variants;
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { type: "spring" as const, stiffness: 100 } },
-} satisfies Variants;
+  visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
+} as Variants;
 
 export default function ClientPage() {
   const ref = useRef(null);
