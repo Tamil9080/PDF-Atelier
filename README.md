@@ -117,4 +117,4 @@ Use this quick flow to showcase the polished landing page and each tool view.
 
 ## Deployment
 
-Deploy to any Next.js-friendly host (Vercel, Netlify, Render, or your own Node server). Make sure to set `NODE_ENV=production` and run `npm run build` before serving with `npm start`.
+Deploy to any Next.js-friendly host (Vercel, Netlify, Render, or your own Node server). Make sure to set `NODE_ENV=production` and run `npm run build` before serving with `npm start`
