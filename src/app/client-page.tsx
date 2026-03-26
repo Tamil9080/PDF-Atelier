@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Space_Grotesk } from "next/font/google";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import {
   ArrowUpRight,
@@ -62,7 +62,7 @@ const trustSignals = [
   { title: "Performance cores", description: "Optimized WebAssembly pipelines crunch multi-hundred page docs.", icon: Cpu, colors: "from-amber-400 to-rose-400" },
 ];
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -70,7 +70,7 @@ const containerVariants = {
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
   visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100 } },
 };
