@@ -62,18 +62,29 @@ const trustSignals = [
   { title: "Performance cores", description: "Optimized WebAssembly pipelines crunch multi-hundred page docs.", icon: Cpu, colors: "from-amber-400 to-rose-400" },
 ];
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1,
+      type: "tween"
+    },
   },
-} as Variants;
+};
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { type: "tween", duration: 0.45 } },
-} as Variants;
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "tween",
+      duration: 0.45
+    }
+  },
+};
 
 export default function ClientPage() {
   const ref = useRef(null);
