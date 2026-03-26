@@ -72,7 +72,7 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: { duration: 0.45 } },
+  visible: { y: 0, opacity: 1, transition: { type: "tween", duration: 0.45 } },
 } as Variants;
 
 export default function ClientPage() {
