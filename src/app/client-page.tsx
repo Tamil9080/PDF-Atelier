@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { Space_Grotesk } from "next/font/google";
-import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import {
   ArrowUpRight,
@@ -23,7 +22,6 @@ import {
   Unlock,
   Zap,
 } from "lucide-react";
-import { useRef } from "react";
 
 const displayFont = Space_Grotesk({
   weight: ["400", "500", "600", "700"],
@@ -62,64 +60,28 @@ const trustSignals = [
   { title: "Performance cores", description: "Optimized WebAssembly pipelines crunch multi-hundred page docs.", icon: Cpu, colors: "from-amber-400 to-rose-400" },
 ];
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 10,
-    }
-  },
-};
-
 export default function ClientPage() {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
-  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-
   return (
-    <div className="space-y-24" ref={ref}>
+    <div className="space-y-24">
       <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/70 px-6 py-12 sm:px-10 lg:px-14">
-        <motion.div style={{ y: yBg }} className="absolute -top-24 left-10 h-64 w-64 rounded-full bg-cyan-500/20 blur-[120px]" />
-        <motion.div style={{ y: yBg }} className="absolute -bottom-32 right-8 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-[150px]" />
-        
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="relative grid gap-10 lg:grid-cols-[1.05fr_0.95fr]"
-        >
+        <div className="absolute -top-24 left-10 h-64 w-64 rounded-full bg-cyan-500/20 blur-[120px]" />
+        <div className="absolute -bottom-32 right-8 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-[150px]" />
+
+        <div className="relative grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="space-y-8">
-            <motion.span variants={itemVariants} className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200">
               <Sparkles className="h-4 w-4 text-cyan-300" aria-hidden="true" />
               New Flow Engine
-            </motion.span>
-            <motion.h1 variants={itemVariants} className={`${displayFont.className} text-4xl leading-tight text-slate-50 sm:text-5xl lg:text-6xl`}>
+            </span>
+            <h1 className={`${displayFont.className} text-4xl leading-tight text-slate-50 sm:text-5xl lg:text-6xl`}>
               Design-forward PDF & image automation for teams that obsess over detail.
-            </motion.h1>
-            <motion.p variants={itemVariants} className="text-base text-slate-300 sm:text-lg">
+            </h1>
+            <p className="text-base text-slate-300 sm:text-lg">
               PDF Atelier is the free PDF to image converter online for teams that demand polish and privacy. Convert PDF to image without
               upload, orchestrate a client side PDF converter workflow, and rely on a secure PDF converter online that never ships your files
               to a server.
-            </motion.p>
-            <motion.div variants={itemVariants} className="flex flex-wrap gap-4">
+            </p>
+            <div className="flex flex-wrap gap-4">
               <Link
                 href="/pdf-to-image"
                 className="inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-cyan-400 via-sky-400 to-emerald-400 px-6 py-3 text-base font-semibold text-slate-950 shadow-[0_20px_45px_-25px_rgba(6,182,212,0.8)] transition-transform hover:scale-105"
@@ -133,19 +95,19 @@ export default function ClientPage() {
               >
                 Explore Toolkit
               </Link>
-            </motion.div>
-            <motion.div variants={containerVariants} className="grid grid-cols-2 gap-6 sm:grid-cols-3">
+            </div>
+            <div className="grid grid-cols-2 gap-6 sm:grid-cols-3">
               {heroStats.map((stat) => (
-                <motion.div variants={itemVariants} key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10 hover:border-cyan-400/50">
+                <div key={stat.label} className="rounded-2xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10 hover:border-cyan-400/50">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-400">{stat.label}</p>
                   <p className={`${displayFont.className} mt-2 text-3xl text-white`}>{stat.value}</p>
                   <p className="text-sm text-slate-400">{stat.detail}</p>
-                </motion.div>
+                </div>
               ))}
-            </motion.div>
+            </div>
           </div>
 
-          <motion.div variants={itemVariants} className="relative">
+          <div className="relative">
             <Tilt tiltMaxAngleX={5} tiltMaxAngleY={5} perspective={1000} scale={1.02} transitionSpeed={2000} className="relative z-10">
               <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-[0_40px_120px_-60px_rgba(15,118,255,0.8)] backdrop-blur-md">
                 <div className="flex items-start justify-between">
@@ -181,38 +143,26 @@ export default function ClientPage() {
               </div>
             </Tilt>
             <div className="absolute -bottom-6 -left-6 h-28 w-28 rounded-[24px] border border-white/10 bg-slate-900/80 blur-[1px]" />
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </section>
 
       <section id="features" className="space-y-8">
-        <motion.div 
-          initial="hidden" 
-          whileInView="visible" 
-          viewport={{ once: true, margin: "-100px" }}
-          variants={containerVariants}
-          className="flex flex-col gap-3 text-center sm:text-left"
-        >
-          <motion.p variants={itemVariants} className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Toolkit</motion.p>
-          <motion.div variants={itemVariants} className="grid gap-4 sm:items-end sm:justify-between lg:grid-cols-[minmax(0,0.8fr)_minmax(0,0.6fr)]">
+        <div className="flex flex-col gap-3 text-center sm:text-left">
+          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Toolkit</p>
+          <div className="grid gap-4 sm:items-end sm:justify-between lg:grid-cols-[minmax(0,0.8fr)_minmax(0,0.6fr)]">
             <h2 className={`${displayFont.className} text-3xl text-white sm:text-4xl`}>
               A studio of converters, compressors, and editors for polished delivery.
             </h2>
             <p className="text-sm text-slate-400 sm:text-base">
               Mix and match tools without page refreshes. Every card below deep-links into its focused workspace.
             </p>
-          </motion.div>
-        </motion.div>
-        
-        <motion.div 
-             initial="hidden" 
-             whileInView="visible" 
-             viewport={{ once: true, margin: "-50px" }}
-             variants={containerVariants}
-             className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3"
-        >
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {featureCards.map((feature) => (
-            <motion.div variants={itemVariants} key={feature.title}>
+            <div key={feature.title}>
               <Tilt tiltMaxAngleX={4} tiltMaxAngleY={4} perspective={1500} scale={1.01} transitionSpeed={1000} className="h-full">
                 <Link
                   href={feature.href}
@@ -237,19 +187,13 @@ export default function ClientPage() {
                   <span className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-500 transition-colors group-hover:text-cyan-400">Open tool</span>
                 </Link>
               </Tilt>
-            </motion.div>
+            </div>
           ))}
-        </motion.div>
+        </div>
       </section>
 
-      <motion.section 
-         initial="hidden" 
-         whileInView="visible" 
-         viewport={{ once: true, margin: "-100px" }}
-         variants={containerVariants}
-         className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]"
-      >
-        <motion.div variants={itemVariants} className="rounded-[32px] border border-white/10 bg-slate-900/70 p-8 shadow-2xl">
+      <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-[32px] border border-white/10 bg-slate-900/70 p-8 shadow-2xl">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Workflow</p>
@@ -260,11 +204,9 @@ export default function ClientPage() {
             <span className="rounded-full border border-white/10 px-4 py-1 text-xs font-semibold text-slate-300">Realtime preview</span>
           </div>
           <ol className="mt-8 space-y-6">
-            {workflowSteps.map((step, idx) => (
-              <motion.li 
-                variants={itemVariants} 
-                custom={idx}
-                key={step.badge} 
+            {workflowSteps.map((step) => (
+              <li
+                key={step.badge}
                 className="relative rounded-3xl border border-white/5 bg-white/5 p-5 pl-14 transition-colors hover:bg-white/10 hover:border-white/20"
               >
                 <span className="absolute left-5 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl border border-white/15 bg-slate-950 text-sm font-semibold text-white shadow-[0_10px_40px_-20px_rgba(14,165,233,0.8)]">
@@ -272,13 +214,13 @@ export default function ClientPage() {
                 </span>
                 <p className="text-sm font-semibold text-cyan-200">{step.title}</p>
                 <p className="text-sm text-slate-300">{step.description}</p>
-              </motion.li>
+              </li>
             ))}
           </ol>
-        </motion.div>
+        </div>
 
         <Tilt tiltMaxAngleX={2} tiltMaxAngleY={2} perspective={1000} scale={1.01} transitionSpeed={2000}>
-          <motion.div variants={itemVariants} className="relative overflow-hidden h-full rounded-[32px] border border-white/10 bg-slate-950/70 p-8 shadow-2xl">
+          <div className="relative overflow-hidden h-full rounded-[32px] border border-white/10 bg-slate-950/70 p-8 shadow-2xl">
             <div className="absolute right-0 top-0 h-64 w-64 translate-x-16 -translate-y-16 rounded-full bg-gradient-to-br from-cyan-500/30 to-fuchsia-500/40 blur-[120px]" />
             <div className="relative space-y-6">
               <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Assurance</p>
@@ -302,17 +244,11 @@ export default function ClientPage() {
                 ))}
               </ul>
             </div>
-          </motion.div>
+          </div>
         </Tilt>
-      </motion.section>
+      </section>
 
-      <motion.section 
-         initial="hidden" 
-         whileInView="visible" 
-         viewport={{ once: true, margin: "-100px" }}
-         variants={itemVariants}
-         className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 px-8 py-10"
-      >
+      <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 px-8 py-10">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(14,165,233,0.25),transparent_45%),radial-gradient(circle_at_90%_10%,rgba(244,114,182,0.2),transparent_40%)] opacity-60" />
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-3">
@@ -340,7 +276,7 @@ export default function ClientPage() {
             </Link>
           </div>
         </div>
-      </motion.section>
+      </section>
     </div>
   );
 }
