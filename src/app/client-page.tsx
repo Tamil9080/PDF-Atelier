@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Space_Grotesk } from "next/font/google";
-import { motion, useScroll, useTransform, type Transition, type Variants } from "framer-motion";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import {
   ArrowUpRight,
@@ -62,23 +62,18 @@ const trustSignals = [
   { title: "Performance cores", description: "Optimized WebAssembly pipelines crunch multi-hundred page docs.", icon: Cpu, colors: "from-amber-400 to-rose-400" },
 ];
 
-const containerVariants: Variants = {
+const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: { staggerChildren: 0.1, delayChildren: 0.1 },
   },
-};
+} satisfies Variants;
 
-const springInTransition: Transition = {
-  type: "spring",
-  stiffness: 100,
-};
-
-const itemVariants: Variants = {
+const itemVariants = {
   hidden: { y: 20, opacity: 0 },
-  visible: { y: 0, opacity: 1, transition: springInTransition },
-};
+  visible: { y: 0, opacity: 1, transition: { type: "spring" as const, stiffness: 100 } },
+} satisfies Variants;
 
 export default function ClientPage() {
   const ref = useRef(null);
