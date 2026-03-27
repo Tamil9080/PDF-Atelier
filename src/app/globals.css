@@ -1,12 +1,20 @@
 @import "tailwindcss";
 
 :root {
+  --brand-primary: #0076f7;
+  --brand-primary-light: #b2d6fd;
+  --brand-secondary: #8ad3d3;
+  --brand-secondary-dark: #284949;
+  --brand-accent-primary: #ebea76;
+  --neutral-light: #ffffff;
+  --neutral-dark: #1d1d1e;
+
   --background: #030712;
   --background-secondary: #0f172a;
   --foreground: #e2e8f0;
-  --accent: #0ea5e9;
+  --accent: var(--brand-primary);
   --accent-2: #a855f7;
-  --accent-3: #14b8a6;
+  --accent-3: var(--brand-secondary);
 }
 
 @theme inline {
@@ -37,13 +45,246 @@ body::before {
   z-index: -1;
 }
 
+/* Dark theme typography and hierarchy (mirrors light theme structure). */
+html:not(.light) main h1,
+html:not(.light) main h2,
+html:not(.light) main h3,
+html:not(.light) main h4,
+html:not(.light) main h5,
+html:not(.light) main h6 {
+  color: #f8fafc !important;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+html:not(.light) main p,
+html:not(.light) main li,
+html:not(.light) main label {
+  color: #cbd5e1;
+}
+
+html:not(.light) main .text-white,
+html:not(.light) main .text-slate-50,
+html:not(.light) main .text-slate-100 {
+  color: #f8fafc !important;
+}
+
+html:not(.light) main .text-slate-200,
+html:not(.light) main .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+
+html:not(.light) main .text-slate-400,
+html:not(.light) main .text-slate-500 {
+  color: #94a3b8 !important;
+}
+
+html:not(.light) main .text-cyan-100,
+html:not(.light) main .text-cyan-200,
+html:not(.light) main .text-cyan-300 {
+  color: #7dd3fc !important;
+}
+
 html.light body {
-  background: radial-gradient(circle at 12% 14%, rgba(14, 165, 233, 0.15), transparent 42%),
-    radial-gradient(circle at 85% 0%, rgba(125, 211, 252, 0.25), transparent 36%),
-    linear-gradient(135deg, #f8fafc 0%, #eff6ff 45%, #e0f2fe 100%);
-  color: #0f172a;
+  --background: var(--neutral-light);
+  --foreground: var(--neutral-dark);
+  --background-secondary: #f8f9fb;
+  background: radial-gradient(circle at 12% 12%, rgba(0, 118, 247, 0.08), transparent 40%),
+    radial-gradient(circle at 88% 0%, rgba(138, 211, 211, 0.16), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #f8f9fb 70%, #f4f7fc 100%);
+  color: var(--foreground);
 }
 
 html.light body::before {
-  opacity: 0.35;
+  opacity: 0.16;
+}
+
+/* Light theme typography and hierarchy */
+html.light main h1,
+html.light main h2,
+html.light main h3,
+html.light main h4,
+html.light main h5,
+html.light main h6 {
+  color: var(--neutral-dark) !important;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+html.light main p,
+html.light main li,
+html.light main label {
+  color: var(--neutral-dark);
+}
+
+/* Readability remap for existing dark-theme utility tokens */
+html.light main .text-white,
+html.light main .text-slate-50,
+html.light main .text-slate-100 {
+  color: var(--neutral-dark) !important;
+}
+
+html.light main .text-slate-200,
+html.light main .text-slate-300 {
+  color: var(--neutral-dark) !important;
+}
+
+html.light main .text-slate-400,
+html.light main .text-slate-500 {
+  color: var(--neutral-dark) !important;
+}
+
+html.light main .text-cyan-100,
+html.light main .text-cyan-200,
+html.light main .text-cyan-300 {
+  color: var(--neutral-dark) !important;
+}
+
+/* Preserve light text when element background is intentionally dark. */
+html.light main .bg-slate-950.text-white,
+html.light main .bg-slate-900.text-white,
+html.light main .bg-slate-950 .text-white,
+html.light main .bg-slate-900 .text-white {
+  color: #f8fafc !important;
+}
+
+/* Keep text readable for intentionally dark hero/CTA sections in light mode. */
+html.light main section.bg-gradient-to-r.from-slate-950.via-slate-900.to-slate-950 h1,
+html.light main section.bg-gradient-to-r.from-slate-950.via-slate-900.to-slate-950 h2,
+html.light main section.bg-gradient-to-r.from-slate-950.via-slate-900.to-slate-950 h3,
+html.light main section.bg-gradient-to-r.from-slate-950.via-slate-900.to-slate-950 p,
+html.light main section.bg-gradient-to-r.from-slate-950.via-slate-900.to-slate-950 span {
+  color: #f8fafc !important;
+}
+
+html.light main section.bg-gradient-to-r.from-slate-950.via-slate-900.to-slate-950 .text-cyan-100,
+html.light main section.bg-gradient-to-r.from-slate-950.via-slate-900.to-slate-950 .text-cyan-200,
+html.light main section.bg-gradient-to-r.from-slate-950.via-slate-900.to-slate-950 .text-cyan-300 {
+  color: #b2d6fd !important;
+}
+
+html.light nav .text-slate-400,
+html.light nav .text-slate-500,
+html.light nav .text-slate-600,
+html.light nav .text-slate-700,
+html.light nav .text-slate-800,
+html.light nav .text-slate-900,
+html.light footer .text-slate-300,
+html.light footer .text-slate-400,
+html.light footer .text-slate-500,
+html.light footer .text-slate-600,
+html.light footer .text-slate-700,
+html.light footer .text-slate-800,
+html.light footer .text-slate-900 {
+  color: var(--neutral-dark) !important;
+}
+
+/* Navigation and footer styling */
+html.light nav {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: #1e4d8a !important;
+  box-shadow: 0 10px 28px -18px rgba(29, 29, 30, 0.28);
+}
+
+html.light footer {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-color: #d8e6f8 !important;
+}
+
+/* Card surfaces for a clean SaaS-style light layout */
+html.light main .bg-slate-950\/80,
+html.light main .bg-slate-950\/70,
+html.light main .bg-slate-950\/60,
+html.light main .bg-slate-900\/80,
+html.light main .bg-slate-900\/70,
+html.light main .bg-slate-900\/60,
+html.light main .bg-white\/10,
+html.light main .bg-white\/5 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 8px 24px -16px rgba(29, 29, 30, 0.24), 0 2px 6px -4px rgba(29, 29, 30, 0.12);
+}
+
+html.light main .border-white\/5,
+html.light main .border-white\/10,
+html.light main .border-white\/15,
+html.light main .border-white\/20,
+html.light main .border-white\/30 {
+  border-color: #d8e6f8 !important;
+}
+
+/* Primary buttons + CTA links */
+html.light main button,
+html.light main a.bg-gradient-to-r,
+html.light main a.bg-white {
+  background: var(--brand-primary) !important;
+  color: var(--neutral-light) !important;
+  border-color: var(--brand-primary) !important;
+  transition: background-color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+  box-shadow: 0 10px 20px -12px rgba(0, 118, 247, 0.65);
+}
+
+html.light main button:hover,
+html.light main a.bg-gradient-to-r:hover,
+html.light main a.bg-white:hover {
+  background: #0068d9 !important;
+  border-color: #0068d9 !important;
+  transform: translateY(-1px);
+}
+
+html.light main button:active,
+html.light main a.bg-gradient-to-r:active,
+html.light main a.bg-white:active {
+  background: var(--brand-primary-light) !important;
+  color: var(--neutral-dark) !important;
+  border-color: var(--brand-primary-light) !important;
+  transform: translateY(0);
+  box-shadow: 0 6px 14px -10px rgba(0, 118, 247, 0.58);
+}
+
+/* Secondary button-like links */
+html.light main a.border-white\/20,
+html.light main a.border-white\/30,
+html.light main a.border-white\/10 {
+  background: rgba(255, 255, 255, 0.82) !important;
+  border-color: #d8e6f8 !important;
+  color: #334155 !important;
+  transition: background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+html.light main a.border-white\/20:hover,
+html.light main a.border-white\/30:hover,
+html.light main a.border-white\/10:hover {
+  background: #f2f7ff !important;
+  border-color: var(--brand-primary-light) !important;
+  transform: translateY(-1px);
+}
+
+/* Inputs with subtle borders and clear focus states */
+html.light main input,
+html.light main select,
+html.light main textarea {
+  background: rgba(255, 255, 255, 0.96) !important;
+  color: var(--neutral-dark) !important;
+  border-color: #d5e2f3 !important;
+  box-shadow: inset 0 1px 1px rgba(29, 29, 30, 0.04);
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+html.light main input::placeholder,
+html.light main textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+html.light main input:focus,
+html.light main select:focus,
+html.light main textarea:focus {
+  border-color: var(--brand-primary) !important;
+  box-shadow: 0 0 0 3px rgba(0, 118, 247, 0.16), inset 0 1px 1px rgba(29, 29, 30, 0.04) !important;
+}
+
+/* Consistent icon stroke style in light theme */
+html.light .lucide {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.85;
 }
