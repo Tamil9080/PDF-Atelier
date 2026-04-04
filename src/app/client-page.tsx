@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Space_Grotesk } from "next/font/google";
 import Tilt from "react-parallax-tilt";
+import { useTheme } from "@/components/ThemeProvider";
 import {
   ArrowUpRight,
   Cpu,
@@ -20,6 +21,7 @@ import {
   ShieldCheck,
   Sparkles,
   Unlock,
+  Wand2,
   Zap,
 } from "lucide-react";
 
@@ -39,6 +41,7 @@ const featureCards = [
   { title: "Image to PDF", description: "Lay out crisp PDF decks from raw shots or mockups in seconds.", href: "/image-to-pdf", icon: FileText, palette: "from-emerald-400 to-lime-400", badge: "Assemble", meta: "Batch ready" },
   { title: "Compress PDF", description: "Dial in file sizes without crushing typography or brand colors.", href: "/pdf-compress", icon: Minimize2, palette: "from-amber-400 to-orange-500", badge: "Refine", meta: "Loss-aware" },
   { title: "Compress Image", description: "Ship web-speed imagery that still feels print-grade sharp.", href: "/image-compress", icon: Layers, palette: "from-fuchsia-400 to-rose-500", badge: "Polish", meta: "Web · Mobile" },
+  { title: "Remove Background", description: "Instantly erase backgrounds from images with AI precision, no uploads.", href: "/background-remove", icon: Wand2, palette: "from-purple-400 to-pink-500", badge: "Clean", meta: "AI · Local" },
   { title: "Merge PDF", description: "Drag multiple PDFs into a single narrative with zero upload.", href: "/merge-pdf", icon: Merge, palette: "from-indigo-400 to-purple-500", badge: "Compile", meta: "Smart order" },
   { title: "Split PDF", description: "Extract custom ranges into perfectly packaged ZIP bundles.", href: "/pdf-split", icon: Scissors, palette: "from-rose-400 to-pink-500", badge: "Segment", meta: "Ranges" },
   { title: "Rotate PDF", description: "Fix sideways scans in bulk with one precise rotation.", href: "/pdf-rotate", icon: RotateCcw, palette: "from-cyan-400 to-blue-500", badge: "Edit", meta: "0° · 90° · 180°" },
@@ -61,19 +64,21 @@ const trustSignals = [
 ];
 
 export default function ClientPage() {
+  const { theme } = useTheme();
+
   return (
     <div className="space-y-24">
-      <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/70 px-6 py-12 sm:px-10 lg:px-14">
+      <section className={`relative overflow-hidden rounded-[32px] border ${theme === "light" ? "border-slate-300/30 bg-slate-50/50" : "border-white/10 bg-slate-950/70"} px-6 py-12 sm:px-10 lg:px-14`}>
         <div className="absolute -top-24 left-10 h-64 w-64 rounded-full bg-cyan-500/20 blur-[120px]" />
         <div className="absolute -bottom-32 right-8 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-[150px]" />
 
         <div className="relative grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="space-y-8">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-200">
+            <span className={`inline-flex items-center gap-2 rounded-full border ${theme === "light" ? "border-slate-300/50 bg-slate-100/50 text-slate-700" : "border-white/15 bg-white/5 text-slate-200"} px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em]`}>
               <Sparkles className="h-4 w-4 text-cyan-300" aria-hidden="true" />
               New Flow Engine
             </span>
-            <h1 className={`${displayFont.className} text-4xl leading-tight text-slate-50 sm:text-5xl lg:text-6xl`}>
+            <h1 className={`${displayFont.className} text-4xl leading-tight ${theme === "light" ? "text-slate-900" : "text-slate-50"} sm:text-5xl lg:text-6xl`}>
               Design-forward PDF & image automation for teams that obsess over detail.
             </h1>
             <p className="text-base text-slate-300 sm:text-lg">
@@ -149,12 +154,12 @@ export default function ClientPage() {
 
       <section id="features" className="space-y-8">
         <div className="flex flex-col gap-3 text-center sm:text-left">
-          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Toolkit</p>
+          <p className={`text-xs font-semibold uppercase tracking-[0.4em] ${theme === "light" ? "text-slate-500" : "text-slate-400"}`}>Toolkit</p>
           <div className="grid gap-4 sm:items-end sm:justify-between lg:grid-cols-[minmax(0,0.8fr)_minmax(0,0.6fr)]">
-            <h2 className={`${displayFont.className} text-3xl text-white sm:text-4xl`}>
+            <h2 className={`${displayFont.className} text-3xl sm:text-4xl ${theme === "light" ? "text-slate-900" : "text-white"}`}>
               A studio of converters, compressors, and editors for polished delivery.
             </h2>
-            <p className="text-sm text-slate-400 sm:text-base">
+            <p className={`text-sm ${theme === "light" ? "text-slate-600" : "text-slate-400"} sm:text-base`}>
               Mix and match tools without page refreshes. Every card below deep-links into its focused workspace.
             </p>
           </div>
@@ -166,25 +171,25 @@ export default function ClientPage() {
               <Tilt tiltMaxAngleX={4} tiltMaxAngleY={4} perspective={1500} scale={1.01} transitionSpeed={1000} className="h-full">
                 <Link
                   href={feature.href}
-                  className="group flex h-full flex-col gap-6 rounded-3xl border border-white/10 bg-slate-900/60 p-6 transition-colors hover:bg-slate-900/80 hover:border-cyan-400/50 hover:shadow-[0_25px_60px_-35px_rgba(8,145,178,0.8)]"
+                  className={`group flex h-full flex-col gap-6 rounded-3xl border ${theme === "light" ? "border-slate-300/30 bg-slate-50 hover:bg-slate-100/80 hover:border-cyan-400/30 hover:shadow-[0_25px_60px_-35px_rgba(34,211,238,0.4)]" : "border-white/10 bg-slate-900/60 hover:bg-slate-900/80 hover:border-cyan-400/50 hover:shadow-[0_25px_60px_-35px_rgba(8,145,178,0.8)]"} p-6 transition-colors`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-[0.3em] text-slate-400">{feature.badge}</span>
-                    <ArrowUpRight className="h-4 w-4 text-slate-500 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-cyan-300" aria-hidden="true" />
+                    <span className={`text-xs uppercase tracking-[0.3em] ${theme === "light" ? "text-slate-600" : "text-slate-400"}`}>{feature.badge}</span>
+                    <ArrowUpRight className={`h-4 w-4 transition-transform ${theme === "light" ? "text-slate-600 group-hover:text-cyan-400" : "text-slate-500 group-hover:text-cyan-300"} group-hover:translate-x-1 group-hover:-translate-y-1`} aria-hidden="true" />
                   </div>
                   <div className="flex items-center gap-4">
                     <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${feature.palette} text-slate-950 shadow-lg shadow-white/10 transition-transform group-hover:scale-110`}>
                       <feature.icon className="h-7 w-7" aria-hidden="true" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-white">{feature.title}</h3>
-                      <p className="text-sm text-slate-400">{feature.meta}</p>
+                      <h3 className={`text-xl font-semibold ${theme === "light" ? "text-slate-900" : "text-white"}`}>{feature.title}</h3>
+                      <p className={`text-sm ${theme === "light" ? "text-slate-600" : "text-slate-400"}`}>{feature.meta}</p>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-300 flex-grow">
+                  <p className={`text-sm flex-grow ${theme === "light" ? "text-slate-700" : "text-slate-300"}`}>
                     {feature.description}
                   </p>
-                  <span className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-500 transition-colors group-hover:text-cyan-400">Open tool</span>
+                  <span className={`text-xs font-semibold uppercase tracking-[0.4em] transition-colors ${theme === "light" ? "text-slate-600 group-hover:text-cyan-500" : "text-slate-500 group-hover:text-cyan-400"}`}>Open tool</span>
                 </Link>
               </Tilt>
             </div>
@@ -193,52 +198,52 @@ export default function ClientPage() {
       </section>
 
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rounded-[32px] border border-white/10 bg-slate-900/70 p-8 shadow-2xl">
+        <div className={`rounded-[32px] border ${theme === "light" ? "border-slate-300/30 bg-slate-50 shadow-none" : "border-white/10 bg-slate-900/70 shadow-2xl"} p-8`}>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Workflow</p>
-              <h3 className={`${displayFont.className} mt-2 text-3xl text-white`}>
+              <p className={`text-xs font-semibold uppercase tracking-[0.4em] ${theme === "light" ? "text-slate-600" : "text-slate-400"}`}>Workflow</p>
+              <h3 className={`${displayFont.className} mt-2 text-3xl ${theme === "light" ? "text-slate-900" : "text-white"}`}>
                 Three tactile steps from import to export.
               </h3>
             </div>
-            <span className="rounded-full border border-white/10 px-4 py-1 text-xs font-semibold text-slate-300">Realtime preview</span>
+            <span className={`rounded-full border ${theme === "light" ? "border-slate-300/50 text-slate-700" : "border-white/10 text-slate-300"} px-4 py-1 text-xs font-semibold`}>Realtime preview</span>
           </div>
           <ol className="mt-8 space-y-6">
             {workflowSteps.map((step) => (
               <li
                 key={step.badge}
-                className="relative rounded-3xl border border-white/5 bg-white/5 p-5 pl-14 transition-colors hover:bg-white/10 hover:border-white/20"
+                className={`relative rounded-3xl border p-5 pl-14 transition-colors ${theme === "light" ? "border-slate-300/30 bg-slate-100/50 hover:bg-slate-100 hover:border-slate-300/50" : "border-white/5 bg-white/5 hover:bg-white/10 hover:border-white/20"}`}
               >
-                <span className="absolute left-5 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl border border-white/15 bg-slate-950 text-sm font-semibold text-white shadow-[0_10px_40px_-20px_rgba(14,165,233,0.8)]">
+                <span className={`absolute left-5 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-2xl border text-sm font-semibold shadow-[0_10px_40px_-20px_rgba(14,165,233,0.8)] ${theme === "light" ? "border-slate-300/50 bg-slate-100 text-slate-900" : "border-white/15 bg-slate-950 text-white"}`}>
                   {step.badge}
                 </span>
-                <p className="text-sm font-semibold text-cyan-200">{step.title}</p>
-                <p className="text-sm text-slate-300">{step.description}</p>
+                <p className={`text-sm font-semibold ${theme === "light" ? "text-cyan-600" : "text-cyan-200"}`}>{step.title}</p>
+                <p className={`text-sm ${theme === "light" ? "text-slate-700" : "text-slate-300"}`}>{step.description}</p>
               </li>
             ))}
           </ol>
         </div>
 
         <Tilt tiltMaxAngleX={2} tiltMaxAngleY={2} perspective={1000} scale={1.01} transitionSpeed={2000}>
-          <div className="relative overflow-hidden h-full rounded-[32px] border border-white/10 bg-slate-950/70 p-8 shadow-2xl">
+          <div className={`relative overflow-hidden h-full rounded-[32px] border ${theme === "light" ? "border-slate-300/30 bg-slate-50 shadow-none" : "border-white/10 bg-slate-950/70 shadow-2xl"} p-8`}>
             <div className="absolute right-0 top-0 h-64 w-64 translate-x-16 -translate-y-16 rounded-full bg-gradient-to-br from-cyan-500/30 to-fuchsia-500/40 blur-[120px]" />
             <div className="relative space-y-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">Assurance</p>
-              <h3 className={`${displayFont.className} text-3xl text-white`}>
+              <p className={`text-xs font-semibold uppercase tracking-[0.4em] ${theme === "light" ? "text-slate-600" : "text-slate-400"}`}>Assurance</p>
+              <h3 className={`${displayFont.className} text-3xl ${theme === "light" ? "text-slate-900" : "text-white"}`}>
                 Built for privacy-critical organizations.
               </h3>
-              <p className="text-sm text-slate-300">
+              <p className={`text-sm ${theme === "light" ? "text-slate-700" : "text-slate-300"}`}>
                 No uploads, no queues, no mystery servers. PDF Atelier leans on WebAssembly + service workers to keep everything inside your browser sandbox.
               </p>
               <ul className="space-y-5">
                 {trustSignals.map((signal) => (
-                  <li key={signal.title} className="flex items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 transition-colors hover:bg-white/10">
+                  <li key={signal.title} className={`flex items-start gap-4 rounded-2xl border p-4 transition-colors ${theme === "light" ? "border-slate-300/30 bg-slate-100/50 hover:bg-slate-100" : "border-white/10 bg-white/5 hover:bg-white/10"}`}>
                     <div className={`flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br ${signal.colors} text-slate-950 shadow-lg`}>
                       <signal.icon className="h-5 w-5" aria-hidden="true" />
                     </div>
                     <div>
-                      <p className="text-base font-semibold text-white">{signal.title}</p>
-                      <p className="text-sm text-slate-400">{signal.description}</p>
+                      <p className={`text-base font-semibold ${theme === "light" ? "text-slate-900" : "text-white"}`}>{signal.title}</p>
+                      <p className={`text-sm ${theme === "light" ? "text-slate-700" : "text-slate-400"}`}>{signal.description}</p>
                     </div>
                   </li>
                 ))}
@@ -248,29 +253,29 @@ export default function ClientPage() {
         </Tilt>
       </section>
 
-      <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 px-8 py-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(14,165,233,0.25),transparent_45%),radial-gradient(circle_at_90%_10%,rgba(244,114,182,0.2),transparent_40%)] opacity-60" />
+      <section className={`relative overflow-hidden rounded-[32px] border ${theme === "light" ? "border-slate-300/30 bg-gradient-to-r from-slate-100 via-slate-50 to-slate-100" : "border-white/10 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950"} px-8 py-10`}>
+        <div className={`absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,${theme === "light" ? "rgba(59,130,246,0.15)" : "rgba(14,165,233,0.25)"},transparent_45%),radial-gradient(circle_at_90%_10%,${theme === "light" ? "rgba(168,85,247,0.1)" : "rgba(244,114,182,0.2)"},transparent_40%)] opacity-60`} />
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.4em] text-cyan-200">Next Up</p>
-            <h3 className={`${displayFont.className} text-3xl text-white sm:text-4xl`}>
+            <p className={`text-xs font-semibold uppercase tracking-[0.4em] ${theme === "light" ? "text-cyan-600" : "text-cyan-200"}`}>Next Up</p>
+            <h3 className={`${displayFont.className} text-3xl sm:text-4xl ${theme === "light" ? "text-slate-900" : "text-white"}`}>
               Spin up your next PDF experiment in under a minute.
             </h3>
-            <p className="text-sm text-slate-300 sm:text-base">
+            <p className={`text-sm sm:text-base ${theme === "light" ? "text-slate-700" : "text-slate-300"}`}>
               Start free, stay private, and feel the difference of an interface crafted like a product launch site.
             </p>
           </div>
           <div className="flex flex-wrap gap-4">
             <Link
               href="/image-to-pdf"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-base font-semibold text-slate-900 transition-transform hover:scale-105"
+              className={`inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-base font-semibold transition-transform hover:scale-105 ${theme === "light" ? "bg-slate-900 text-white hover:bg-slate-800" : "bg-white text-slate-900"}`}
             >
               Launch Studio
               <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
             </Link>
             <Link
               href="#features"
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/30 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-white/10"
+              className={`inline-flex items-center justify-center gap-2 rounded-full border px-6 py-3 text-base font-semibold transition-colors ${theme === "light" ? "border-slate-400 text-slate-900 hover:bg-slate-200/30" : "border-white/30 text-white hover:bg-white/10"}`}
             >
               Browse features
             </Link>

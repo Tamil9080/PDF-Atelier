@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { UploadCloud } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "./ThemeProvider";
 import {
   DEFAULT_ALLOWED_EXTENSIONS,
   DEFAULT_ALLOWED_MIME,
@@ -36,6 +37,7 @@ export function Dropzone({
   onSecurityError,
 }: DropzoneProps) {
   const [errors, setErrors] = useState<string[]>([]);
+  const { theme } = useTheme();
 
   const normalizedAllowedMime = useMemo(() => {
     if (allowedMimeTypes?.length) {
@@ -110,8 +112,12 @@ export function Dropzone({
       <div
         {...getRootProps()}
         className={cn(
-          "group border-2 border-dashed rounded-2xl p-10 cursor-pointer transition-all duration-300 flex flex-col items-center justify-center text-center gap-4 bg-slate-900/60 border-white/15 hover:border-cyan-400/60 hover:shadow-cyan-500/20 hover:shadow-xl",
-          isDragActive ? "border-cyan-400 bg-cyan-500/10 scale-[1.01] shadow-cyan-500/30 shadow-2xl" : "",
+          `group border-2 border-dashed rounded-2xl p-10 cursor-pointer transition-all duration-300 flex flex-col items-center justify-center text-center gap-4 ${
+            theme === "light"
+              ? "bg-slate-100/60 border-slate-300/30 hover:border-cyan-400/60 hover:shadow-cyan-400/20 hover:shadow-xl"
+              : "bg-slate-900/60 border-white/15 hover:border-cyan-400/60 hover:shadow-cyan-500/20 hover:shadow-xl"
+          }`,
+          isDragActive ? `${theme === "light" ? "border-cyan-400 bg-cyan-400/10 scale-[1.01] shadow-cyan-400/30" : "border-cyan-400 bg-cyan-500/10 scale-[1.01] shadow-cyan-500/30"} shadow-2xl` : "",
           className
         )}
         aria-label="Secure file dropzone"
@@ -119,7 +125,7 @@ export function Dropzone({
         <input {...getInputProps()} />
         <div
           className={cn(
-            "relative p-4 rounded-2xl bg-gradient-to-br from-cyan-400/30 via-sky-500/20 to-indigo-500/30 transition-transform duration-300 group-hover:scale-105",
+            `relative p-4 rounded-2xl bg-gradient-to-br from-cyan-400/30 via-sky-500/20 to-indigo-500/30 transition-transform duration-300 group-hover:scale-105`,
             isDragActive ? "animate-pulse" : ""
           )}
         >
@@ -132,16 +138,16 @@ export function Dropzone({
           <UploadCloud className="h-8 w-8 text-cyan-300" aria-hidden="true" />
         </div>
         <div>
-          <p className="text-lg font-semibold text-white">
+          <p className={`text-lg font-semibold ${theme === "light" ? "text-slate-900" : "text-white"}`}>
             {isDragActive ? "Drop the files here" : "Click to upload or drag and drop"}
           </p>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className={`text-sm mt-1 ${theme === "light" ? "text-slate-600" : "text-slate-400"}`}>
             {label || "Files stay on-device and never leave your browser."}
           </p>
           <p className="text-xs text-cyan-300/90 mt-1" aria-live="polite">
             {isDragActive ? "Release to start secure processing" : "Drag files in to see instant preview"}
           </p>
-          <p className="text-xs text-slate-500 mt-2">
+          <p className={`text-xs mt-2 ${theme === "light" ? "text-slate-600" : "text-slate-500"}`}>
             Max {formatBytes(normalizedMaxSize)} · Allowed: {allowedLabels.join(", ")}
           </p>
         </div>

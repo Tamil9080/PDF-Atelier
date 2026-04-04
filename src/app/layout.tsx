@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     siteName: "PDF Atelier",
     images: [
       {
-        url: "/file.svg",
+        url: "/logo.png",
         width: 512,
         height: 512,
         alt: "PDF Atelier preview",
@@ -42,9 +43,9 @@ export const metadata: Metadata = {
     site: "@pdfatelier",
   },
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
 };
 
@@ -58,13 +59,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <Navbar />
-        <main className="flex-grow w-full px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-          <div className="max-w-7xl mx-auto w-full">
-            {children}
-          </div>
-        </main>
-        <Footer />
+        <ThemeProvider>
+          <Navbar />
+          <main className="flex-grow w-full px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+            <div className="max-w-7xl mx-auto w-full">
+              {children}
+            </div>
+          </main>
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

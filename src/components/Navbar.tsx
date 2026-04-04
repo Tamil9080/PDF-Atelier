@@ -1,8 +1,9 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
@@ -11,6 +12,7 @@ const links = [
   { href: "/image-to-pdf", label: "Image to PDF" },
   { href: "/pdf-compress", label: "Compress PDF" },
   { href: "/image-compress", label: "Compress Image" },
+  { href: "/background-remove", label: "Remove Background" },
   { href: "/merge-pdf", label: "Merge PDF" },
   { href: "/pdf-split", label: "Split PDF" },
   { href: "/pdf-rotate", label: "Rotate PDF" },
@@ -59,8 +61,15 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4 py-4">
           <Link href="/" className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-cyan-500/30">
-              <FileText className="h-6 w-6 text-white" />
+            <div className="relative h-12 w-12 overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-400 via-sky-500 to-indigo-500 shadow-lg shadow-cyan-500/30">
+              <Image
+                src="/logo.png"
+                alt="PDF Atelier logo"
+                fill
+                sizes="48px"
+                className="object-cover scale-125"
+                priority
+              />
             </div>
             <div>
               <p className={cn("text-lg font-semibold tracking-tight", theme === "light" ? "text-slate-900" : "text-white")}>
